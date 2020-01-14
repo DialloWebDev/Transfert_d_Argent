@@ -1,15 +1,20 @@
 <?php
 
 namespace App\Entity;
-use ApiPlatform\Core\Annotation\ApiResource;
+use Serializable;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Security\Core\User\UserInterface;
+use ApiPlatform\Core\Annotation\ApiResource;
+use Symfony\Component\Security\Core\Users\UserInterface;
+use Symfony\Component\Security\Core\User\AdvancedUserInterface;
+
+
+
 
 /**
  * @ApiResource()
  * @ORM\Entity(repositoryClass="App\Repository\UsersRepository")
  */
-class Users implements UserInterface
+class Users implements AdvancedUserInterface,   \Serializable
 {
     /**
      * @ORM\Id()
@@ -93,8 +98,6 @@ class Users implements UserInterface
     public function getRoles(): array
     {
         $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
-        $roles[] = 'ROLE_USER';
 
         return array_unique($roles);
     }
@@ -196,5 +199,42 @@ class Users implements UserInterface
         $this->role = $role;
 
         return $this;
+    }
+    
+
+    public function isAccountNonExpired()
+    {
+        return true;
+    }
+
+    public function isAccountNonLocked()
+    {
+        return true;
+    }
+
+    public function isCredentialsNonExpired()
+    {
+        return true;
+    }
+
+    public function isEnabled()
+    {
+        return $this->isActif;
+    }
+
+    // serialize and unserialize must be updated - see below
+    public function serialize()
+    {
+        return serialize(array(
+            // ...
+            $this->isActif,
+        ));
+    }
+    public function unserialize($serialized)
+    {
+        list (
+            // ...
+            $this->isActif,
+        ) = unserialize($serialized);
     }
 }

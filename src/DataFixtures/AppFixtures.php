@@ -47,7 +47,7 @@ class AppFixtures extends Fixture
         $users->setPrenom("Mamadou");
         $users->setNom("Diallo");
         $users->setTel("773916006");
-        $users->setIsActif("1");
+        $users->setIsActif(true);
         $manager->persist($users);
         $manager->flush();
     }
